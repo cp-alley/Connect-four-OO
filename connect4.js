@@ -10,6 +10,7 @@ class Game {
     this.height = height;
     this.currPlayer = 1;
     this.makeBoard();
+    // this.makeHtmlBoard();
   }
 
   makeBoard() {
@@ -29,8 +30,8 @@ class Game {
 
     for (let x = 0; x < this.width; x++) {
       const headCell = document.createElement('td');
-      headCell.setAttribute('id', x);
-      headCell.addEventListener('click', handleClick);
+      headCell.setAttribute('id', `top-${x}`);
+      headCell.addEventListener('click', this.handleClick);
       top.append(headCell);
     }
 
@@ -52,7 +53,7 @@ class Game {
 
   findSpotForCol(x) {
     for (let y = this.height - 1; y >= 0; y--) {
-      if (!board[y][x]) {
+      if (!this.board[y][x]) {
         return y;
       }
     }
@@ -69,37 +70,73 @@ class Game {
   }
 
 
-endGame(msg) {
-  alert(msg);
-}
-
-handleClick(evt) {
-  // get x from ID of clicked cell
-  const x = Number(evt.target.id.slice(4));
-
-  // get next spot in column (if none, ignore click)
-  const y = findSpotForCol(x);
-  if (y === null) {
-    return;
+  endGame(msg) {
+    alert(msg);
   }
 
-  // place piece in board and add to HTML table
-  board[y][x] = currPlayer;
-  placeInTable(y, x);
+  handleClick(evt) {
+    // get x from ID of clicked cell
+    const id = evt.target.id;
+    const x = Number(Array.from(id).slice(4));
 
-  // check for win
-  if (checkForWin()) {
-    return endGame(`Player ${currPlayer} won!`);
+
+    // get next spot in column (if none, ignore click)
+    const y = this.findSpotForCol(x);
+    if (y === null) {
+      return;
+    }
+
+    // place piece in board and add to HTML table
+    this.board[y][x] = this.currPlayer;
+    this.placeInTable(y, x);
+
+    // check for win
+    if (this.checkForWin()) {
+      return endGame(`Player ${this.currPlayer} won!`);
+    }
+
+    // check for tie
+    if (this.board.every(row => row.every(cell => cell))) {
+      return this.endGame('Tie!');
+    }
+
+    // switch players
+    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
   }
 
-  // check for tie
-  if (board.every(row => row.every(cell => cell))) {
-    return endGame('Tie!');
+  checkForWin() {
+    function _win(cells) {
+      // Check four cells to see if they're all color of current player
+      //  - cells: list of four (y, x) cells
+      //  - returns true if all are legal coordinates & all match currPlayer
+
+      return cells.every(
+        ([y, x]) =>
+          y >= 0 &&
+          y < this.height &&
+          x >= 0 &&
+          x < this.width &&
+          this.board[y][x] === this.currPlayer
+      );
+    }
+
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        // get "check list" of 4 cells (starting here) for each of the different
+        // ways to win
+        const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+        const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+        const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+        const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+
+        // find winner (only checking each win-possibility as needed)
+        if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+          return true;
+        }
+      }
+    }
   }
 
-  // switch players
-  currPlayer = currPlayer === 1 ? 2 : 1;
-}
 
 }
 
@@ -181,71 +218,71 @@ handleClick(evt) {
 
 /** handleClick: handle click of column top to play piece */
 
-function handleClick(evt) {
-  // get x from ID of clicked cell
-  const x = +evt.target.id;
+// function handleClick(evt) {
+//   // get x from ID of clicked cell
+//   const x = +evt.target.id;
 
-  // get next spot in column (if none, ignore click)
-  const y = findSpotForCol(x);
-  if (y === null) {
-    return;
-  }
+//   // get next spot in column (if none, ignore click)
+//   const y = findSpotForCol(x);
+//   if (y === null) {
+//     return;
+//   }
 
-  // place piece in board and add to HTML table
-  board[y][x] = currPlayer;
-  placeInTable(y, x);
+//   // place piece in board and add to HTML table
+//   board[y][x] = currPlayer;
+//   placeInTable(y, x);
 
-  // check for win
-  if (checkForWin()) {
-    return endGame(`Player ${currPlayer} won!`);
-  }
+//   // check for win
+//   if (checkForWin()) {
+//     return endGame(`Player ${currPlayer} won!`);
+//   }
 
-  // check for tie
-  if (board.every(row => row.every(cell => cell))) {
-    return endGame('Tie!');
-  }
+//   // check for tie
+//   if (board.every(row => row.every(cell => cell))) {
+//     return endGame('Tie!');
+//   }
 
-  // switch players
-  currPlayer = currPlayer === 1 ? 2 : 1;
-}
+//   // switch players
+//   currPlayer = currPlayer === 1 ? 2 : 1;
+// }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 
-function checkForWin() {
-  function _win(cells) {
-    // Check four cells to see if they're all color of current player
-    //  - cells: list of four (y, x) cells
-    //  - returns true if all are legal coordinates & all match currPlayer
+// function checkForWin() {
+//   function _win(cells) {
+//     // Check four cells to see if they're all color of current player
+//     //  - cells: list of four (y, x) cells
+//     //  - returns true if all are legal coordinates & all match currPlayer
 
-    return cells.every(
-      ([y, x]) =>
-        y >= 0 &&
-        y < HEIGHT &&
-        x >= 0 &&
-        x < WIDTH &&
-        board[y][x] === currPlayer
-    );
-  }
+//     return cells.every(
+//       ([y, x]) =>
+//         y >= 0 &&
+//         y < HEIGHT &&
+//         x >= 0 &&
+//         x < WIDTH &&
+//         board[y][x] === currPlayer
+//     );
+//   }
 
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
-      // get "check list" of 4 cells (starting here) for each of the different
-      // ways to win
-      const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-      const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-      const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+//   for (let y = 0; y < HEIGHT; y++) {
+//     for (let x = 0; x < WIDTH; x++) {
+//       // get "check list" of 4 cells (starting here) for each of the different
+//       // ways to win
+//       const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+//       const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+//       const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+//       const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
-      // find winner (only checking each win-possibility as needed)
-      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-        return true;
-      }
-    }
-  }
-}
+//       // find winner (only checking each win-possibility as needed)
+//       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+//         return true;
+//       }
+//     }
+//   }
+// }
 
 let newGame = new Game();
-newGame.makeBoard();
+// newGame.makeBoard();
 newGame.makeHtmlBoard();
 
 // makeBoard();
