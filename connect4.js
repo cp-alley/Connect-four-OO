@@ -1,3 +1,4 @@
+"use strict";
 /** Connect Four
  *
  * Player 1 and 2 alternate turns. On each turn, a piece is dropped down a
@@ -9,12 +10,12 @@ class Game {
     this.width = width;
     this.height = height;
     this.currPlayer = 1;
+    this.board = [];
     this.makeBoard();
     this.makeHtmlBoard();
   }
 
   makeBoard() {
-    this.board = [];
 
     for (let y = 0; y < this.height; y++) {
       this.board.push(Array.from({ length: this.width }));
@@ -93,9 +94,8 @@ class Game {
 
     // check for win
     if (this.checkForWin()) {
-      console.log("this", this)
-      debugger;
-      return endGame(`Player ${this.currPlayer} won!`);
+      // console.log("this in handle click", this);
+      return this.endGame(`Player ${this.currPlayer} won!`);
     }
 
     // check for ti, thise
@@ -108,11 +108,12 @@ class Game {
   }
 
   checkForWin() {
-    function _win(cells) {
+    // console.log("this in checkForWin", this);
+    const _win = (cells) => {
       // Check four cells to see if they're all color of current player
       //  - cells: list of four (y, x) cells
       //  - returns true if all are legal coordinates & all match currPlayer
-      console.log("this", this)
+      // console.log("this in _win", this);
       return cells.every(
         ([y, x]) =>
           y >= 0 &&
@@ -121,7 +122,7 @@ class Game {
           x < this.width &&
           this.board[y][x] === this.currPlayer
       );
-    }
+    };
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
@@ -139,9 +140,9 @@ class Game {
       }
     }
   }
-
-
 }
+
+new Game(6, 7);
 
 // const WIDTH = 7;
 // const HEIGHT = 6;
@@ -284,7 +285,7 @@ class Game {
 //   }
 // }
 
-// let newGame = new Game();
+// new Game();
 // newGame.makeBoard();
 // newGame.makeHtmlBoard();
 
