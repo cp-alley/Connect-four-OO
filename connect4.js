@@ -10,7 +10,7 @@ class Game {
     this.height = height;
     this.currPlayer = 1;
     this.makeBoard();
-    // this.makeHtmlBoard();
+    this.makeHtmlBoard();
   }
 
   makeBoard() {
@@ -30,8 +30,8 @@ class Game {
 
     for (let x = 0; x < this.width; x++) {
       const headCell = document.createElement('td');
-      headCell.setAttribute('id', `top-${x}`);
-      headCell.addEventListener('click', this.handleClick);
+      headCell.setAttribute('id', x);
+      headCell.addEventListener('click', this.handleClick.bind(this));
       top.append(headCell);
     }
 
@@ -76,11 +76,11 @@ class Game {
 
   handleClick(evt) {
     // get x from ID of clicked cell
-    const id = evt.target.id;
-    const x = Number(Array.from(id).slice(4));
+    const x = +evt.target.id;
 
 
     // get next spot in column (if none, ignore click)
+    // console.log("this", this)
     const y = this.findSpotForCol(x);
     if (y === null) {
       return;
@@ -90,12 +90,15 @@ class Game {
     this.board[y][x] = this.currPlayer;
     this.placeInTable(y, x);
 
+
     // check for win
     if (this.checkForWin()) {
+      console.log("this", this)
+      debugger;
       return endGame(`Player ${this.currPlayer} won!`);
     }
 
-    // check for tie
+    // check for ti, thise
     if (this.board.every(row => row.every(cell => cell))) {
       return this.endGame('Tie!');
     }
@@ -109,7 +112,7 @@ class Game {
       // Check four cells to see if they're all color of current player
       //  - cells: list of four (y, x) cells
       //  - returns true if all are legal coordinates & all match currPlayer
-
+      console.log("this", this)
       return cells.every(
         ([y, x]) =>
           y >= 0 &&
@@ -281,9 +284,9 @@ class Game {
 //   }
 // }
 
-let newGame = new Game();
+// let newGame = new Game();
 // newGame.makeBoard();
-newGame.makeHtmlBoard();
+// newGame.makeHtmlBoard();
 
 // makeBoard();
 // makeHtmlBoard();
