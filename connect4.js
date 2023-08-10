@@ -6,6 +6,7 @@
  * board fills (tie)
  */
 class Game {
+  //TODO: MAKE PLAYER PARAMETER
   constructor(height = 6, width = 7) {
     this.width = width;
     this.height = height;
@@ -24,6 +25,7 @@ class Game {
 
   makeHtmlBoard() {
     const board = document.getElementById('board');
+    board.innerHTML = "";
 
     // make column tops (clickable area for adding a piece to that column)
     const top = document.createElement('tr');
