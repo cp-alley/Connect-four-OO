@@ -9,13 +9,17 @@ class Game {
     this.width = width;
     this.height = height;
     this.currPlayer = 1;
-    this.board = [];
+    this.makeBoard();
   }
+
   makeBoard() {
+    this.board = [];
+
     for (let y = 0; y < this.height; y++) {
       this.board.push(Array.from({ length: this.width }));
     }
   }
+
   makeHtmlBoard() {
     const board = document.getElementById('board');
 
@@ -45,6 +49,58 @@ class Game {
       board.append(row);
     }
   }
+
+  findSpotForCol(x) {
+    for (let y = this.height - 1; y >= 0; y--) {
+      if (!board[y][x]) {
+        return y;
+      }
+    }
+    return null;
+  }
+
+  placeInTable(y, x) {
+    const piece = document.createElement('div');
+    piece.classList.add('piece');
+    piece.classList.add(`p${this.currPlayer}`);
+
+    const spot = document.getElementById(`c-${y}-${x}`);
+    spot.append(piece);
+  }
+
+
+endGame(msg) {
+  alert(msg);
+}
+
+handleClick(evt) {
+  // get x from ID of clicked cell
+  const x = Number(evt.target.id.slice(4));
+
+  // get next spot in column (if none, ignore click)
+  const y = findSpotForCol(x);
+  if (y === null) {
+    return;
+  }
+
+  // place piece in board and add to HTML table
+  board[y][x] = currPlayer;
+  placeInTable(y, x);
+
+  // check for win
+  if (checkForWin()) {
+    return endGame(`Player ${currPlayer} won!`);
+  }
+
+  // check for tie
+  if (board.every(row => row.every(cell => cell))) {
+    return endGame('Tie!');
+  }
+
+  // switch players
+  currPlayer = currPlayer === 1 ? 2 : 1;
+}
+
 }
 
 // const WIDTH = 7;
@@ -97,31 +153,31 @@ class Game {
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
-function findSpotForCol(x) {
-  for (let y = HEIGHT - 1; y >= 0; y--) {
-    if (!board[y][x]) {
-      return y;
-    }
-  }
-  return null;
-}
+// function findSpotForCol(x) {
+//   for (let y = HEIGHT - 1; y >= 0; y--) {
+//     if (!board[y][x]) {
+//       return y;
+//     }
+//   }
+//   return null;
+// }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 
-function placeInTable(y, x) {
-  const piece = document.createElement('div');
-  piece.classList.add('piece');
-  piece.classList.add(`p${currPlayer}`);
+// function placeInTable(y, x) {
+//   const piece = document.createElement('div');
+//   piece.classList.add('piece');
+//   piece.classList.add(`p${currPlayer}`);
 
-  const spot = document.getElementById(`c-${y}-${x}`);
-  spot.append(piece);
-}
+//   const spot = document.getElementById(`c-${y}-${x}`);
+//   spot.append(piece);
+// }
 
 /** endGame: announce game end */
 
-function endGame(msg) {
-  alert(msg);
-}
+// function endGame(msg) {
+//   alert(msg);
+// }
 
 /** handleClick: handle click of column top to play piece */
 
@@ -188,6 +244,9 @@ function checkForWin() {
   }
 }
 
+let newGame = new Game();
+newGame.makeBoard();
+newGame.makeHtmlBoard();
 
-makeBoard();
-makeHtmlBoard();
+// makeBoard();
+// makeHtmlBoard();
