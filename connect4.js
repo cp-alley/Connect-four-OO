@@ -7,13 +7,16 @@
  */
 class Game {
   //TODO: MAKE PLAYER PARAMETER
-  constructor(height = 6, width = 7) {
+  constructor(height = 6, width = 7, p1, p2) {
     this.width = width;
     this.height = height;
     this.currPlayer = 1;
+    this.p1 = p1;
+    this.p2 = p2;
     this.board = [];
     this.makeBoard();
     this.makeHtmlBoard();
+    this.isGameOver = false;
   }
 
   makeBoard() {
@@ -81,6 +84,9 @@ class Game {
     // get x from ID of clicked cell
     const x = +evt.target.id;
 
+    if (this.isGameOver) {
+      return;
+    }
 
     // get next spot in column (if none, ignore click)
     // console.log("this", this)
@@ -97,11 +103,13 @@ class Game {
     // check for win
     if (this.checkForWin()) {
       // console.log("this in handle click", this);
+      this.isGameOver = true;
       return this.endGame(`Player ${this.currPlayer} won!`);
     }
 
-    // check for ti, thise
+    // check for tie, thise
     if (this.board.every(row => row.every(cell => cell))) {
+      this.isGameOver = true;
       return this.endGame('Tie!');
     }
 
@@ -144,7 +152,21 @@ class Game {
   }
 }
 
-new Game(6, 7);
+function startGame() {
+
+  const newGame = new Game(6, 7);
+  const p1 = new Player()
+}
+
+class Player {
+
+  constructor(color) {
+    this.color = color;
+  }
+}
+
+const playerOneColor = document.getElementById("p1-color");
+const playerTwoColor = document.getElementById("p2-color");
 
 // const WIDTH = 7;
 // const HEIGHT = 6;
