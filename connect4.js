@@ -6,13 +6,12 @@
  * board fills (tie)
  */
 class Game {
-  //TODO: MAKE PLAYER PARAMETER
-  constructor(height = 6, width = 7, p1, p2) {
+  constructor(height = 6, width = 7, p1 = "red", p2 = "blue") {
     this.width = width;
     this.height = height;
-    this.currPlayer = 1;
     this.p1 = p1;
     this.p2 = p2;
+    this.currPlayer = p1;
     this.board = [];
     this.makeBoard();
     this.makeHtmlBoard();
@@ -69,7 +68,9 @@ class Game {
   placeInTable(y, x) {
     const piece = document.createElement('div');
     piece.classList.add('piece');
-    piece.classList.add(`p${this.currPlayer}`);
+    // piece.classList.add(`p${this.currPlayer}`);
+    piece.style.backgroundColor = this.currPlayer.color;
+    console.log("this at place", this);
 
     const spot = document.getElementById(`c-${y}-${x}`);
     spot.append(piece);
@@ -104,7 +105,7 @@ class Game {
     if (this.checkForWin()) {
       // console.log("this in handle click", this);
       this.isGameOver = true;
-      return this.endGame(`Player ${this.currPlayer} won!`);
+      return this.endGame(`Player ${this.currPlayer.color} won!`);
     }
 
     // check for tie, thise
@@ -114,7 +115,7 @@ class Game {
     }
 
     // switch players
-    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+    this.currPlayer = this.currPlayer === this.p1 ? this.p2 : this.p1;
   }
 
   checkForWin() {
@@ -153,20 +154,24 @@ class Game {
 }
 
 function startGame() {
-
-  const newGame = new Game(6, 7);
-  const p1 = new Player()
+  const playerOneColor = document.getElementById("p1-color");
+  const playerTwoColor = document.getElementById("p2-color");
+  const player1 = new Player(playerOneColor.value);
+  const player2 = new Player(playerTwoColor.value);
+  console.log("player 1 is", player1);
+  console.log("player 2 is", player2);
+  new Game(6, 7, player1, player2);
 }
 
-class Player {
 
+class Player {
   constructor(color) {
     this.color = color;
   }
 }
 
-const playerOneColor = document.getElementById("p1-color");
-const playerTwoColor = document.getElementById("p2-color");
+
+
 
 // const WIDTH = 7;
 // const HEIGHT = 6;
